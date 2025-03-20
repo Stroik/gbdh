@@ -5,7 +5,7 @@ import * as XLSX from "xlsx";
 export async function GET() {
   try {
     const url =
-      "https://docs.google.com/spreadsheets/d/e/2PACX-1vROoSk0ioqBPccq24FGyKvlPIQX_6_XK1r0dXqa6XNex2GZXbYyJyde7Z4Og1bpLkXMiLRto8vXdoUR/pub?output=xlsx";
+      "https://docs.google.com/spreadsheets/d/e/2PACX-1vTqj7_vD9hyJrvpvybZdEbz0s7imtkkI98cnqgtbj_esYfDzD74rmANHNgRpFvUPluV_M1ZvjDGxysE/pub?output=xlsx";
     const response = await fetch(url);
     const buffer = await response.arrayBuffer();
 
