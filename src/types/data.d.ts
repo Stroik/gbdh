@@ -4,13 +4,16 @@ export interface Response {
   fusilados: Fusilado[];
 }
 
-export interface Cuenta {
-  id: number;
-  position: number;
-  user: string;
+export type Cuenta = {
+  username: string; // nombre de usuario @xxx
+  profile: string; // foto de perfil
   followers: number;
-  picture: string;
-}
+  tweets: number;
+  following: number;
+  likes: number;
+  bio: string;
+  position: number;
+};
 
 export interface Fusilado {
   user: string;

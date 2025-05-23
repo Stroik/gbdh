@@ -1,76 +1,47 @@
-import { Cuenta } from "@/types/data";
 import { NextResponse } from "next/server";
-import * as XLSX from "xlsx";
+import type { Cuenta } from "@/types/data";
+import fs from "fs/promises";
+import path from "path";
 
 export async function GET() {
   try {
-    const url =
-      "https://docs.google.com/spreadsheets/d/e/2PACX-1vTqj7_vD9hyJrvpvybZdEbz0s7imtkkI98cnqgtbj_esYfDzD74rmANHNgRpFvUPluV_M1ZvjDGxysE/pub?output=xlsx";
-    const response = await fetch(url);
-    const buffer = await response.arrayBuffer();
+    const filePath = path.join(process.cwd(), "src", "db", "hagovdb.json");
+    const fileExists = await fs
+      .access(filePath)
+      .then(() => true)
+      .catch(() => false);
 
-    const workbook = XLSX.read(buffer);
+    if (!fileExists) {
+      return NextResponse.json(
+        { error: "Archivo hagovdb.json no encontrado" },
+        { status: 404 }
+      );
+    }
 
-    const cuentasSheet = workbook.Sheets["Cuentas"];
-    // const muertesSheet = workbook.Sheets["Muertes"];
-    // const fusiladosSheet = workbook.Sheets["REHF"];
-    const fpfSheet = workbook.Sheets["FPF"];
+    const data = await fs.readFile(filePath, "utf-8");
+    const parsed: unknown = JSON.parse(data);
 
-    const cuentasRaw = XLSX.utils
-      .sheet_to_json<unknown[]>(cuentasSheet, { header: 1 })
-      .slice(1);
-    // const muertesRaw = XLSX.utils
-    //   .sheet_to_json<unknown[]>(muertesSheet, { header: 1 })
-    //   .slice(1);
-    // const fusiladosRaw = XLSX.utils
-    //   .sheet_to_json<unknown[]>(fusiladosSheet, { header: 1 })
-    //   .slice(1);
-    const fpfRaw = XLSX.utils.sheet_to_json<unknown[]>(fpfSheet, { header: 1 });
+    if (!Array.isArray(parsed)) {
+      return NextResponse.json(
+        { error: "Formato inválido: el JSON no es un array" },
+        { status: 400 }
+      );
+    }
 
-    const cuentas = cuentasRaw
-      .map((row, i) => {
-        const userCell = row[0]?.toString().trim();
-        if (!userCell) return null;
-        const match = userCell.match(/^(\d+)\.\s*(.+)$/);
-        if (!match) return null;
-        const [, , user] = match;
-        const followers = Number(row[1]);
-        if (isNaN(followers) || followers < 0) return null;
+    const cuentas: Cuenta[] = parsed.map((item, index) => ({
+      ...item,
+      position: item.position ?? index + 1,
+    }));
 
-        let pictureLink = fpfRaw[i]?.[0] ? fpfRaw[i][0] : "";
-        if (pictureLink === "#N/D" || !pictureLink)
-          pictureLink = "/placeholder.png";
-
-        return {
-          id: i + 1,
-          user: user.trim(),
-          followers,
-          picture: typeof pictureLink === "string" ? pictureLink : "",
-        };
-      })
-      .filter((item): item is Omit<Cuenta, "position"> => Boolean(item))
-      .sort((a, b) => b.followers - a.followers)
-      .map((item, index) => ({ ...item, position: index + 1 }));
-
-    // const muertes = muertesRaw
-    //   .filter((row) => row[0] && row[0].toString().trim() !== "")
-    //   .map((row) => ({
-    //     user: row[0],
-    //     followers: row[1],
-    //     dead_at: row[2],
-    //     status: row[3],
-    //     now_is: row[4],
-    //   }));
-
-    // const fusilados = fusiladosRaw
-    //   .filter((row) => row[0] && row[0].toString().trim() !== "")
-    //   .map((row) => ({
-    //     user: row[0],
-    //     dead_at: row[1],
-    //   }));
-
-    return NextResponse.json({ cuentas });
+    return NextResponse.json({
+      cuentas,
+      muertes: [],
+      fusilados: [],
+    });
   } catch (error) {
-    return NextResponse.json({ error }, { status: 500 });
+    return NextResponse.json(
+      { error: `Fallo inesperado: ${String(error)}` },
+      { status: 500 }
+    );
   }
 }

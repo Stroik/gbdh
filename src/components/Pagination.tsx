@@ -18,7 +18,7 @@ export default function Pagination({
 }: PaginationProps) {
   const handleSetPage = (page: number) => {
     setPage(page);
-    document.querySelector("section")?.scrollTo({ top: 0, behavior: "smooth" });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   return (
@@ -26,6 +26,7 @@ export default function Pagination({
       <button
         onClick={() => currentPage > 1 && handleSetPage(currentPage - 1)}
         disabled={currentPage === 1}
+        aria-label="Página anterior"
         className="join-item btn btn-sm"
       >
         <RiArrowLeftDoubleLine size={16} />
@@ -76,6 +77,7 @@ export default function Pagination({
           currentPage < totalPages && handleSetPage(currentPage + 1)
         }
         disabled={currentPage === totalPages}
+        aria-label="Página siguiente"
         className="join-item btn btn-sm"
       >
         <RiArrowRightDoubleLine size={16} />

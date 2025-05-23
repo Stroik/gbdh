@@ -29,46 +29,11 @@ export default function Navbar() {
               />
             </svg>
           </div>
-          <ul
-            tabIndex={0}
-            className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52"
-          >
-            {/*<li>
-              <Link href="/" className={pathname === "/" ? "active" : ""}>
-                Cuentas
-              </Link>
-            </li>
-             <li>
-              <Link
-                href="/muertes"
-                className={pathname === "/muertes" ? "active" : ""}
-              >
-                Muertes
-              </Link>
-            </li> */}
-          </ul>
         </div>
         <Link href="/" className="btn btn-ghost text-xl">
           <Image src="/logo.png" alt="Logo" width={24} height={28} priority />
           GBDH
         </Link>
-      </div>
-      <div className="navbar-center hidden lg:flex">
-        <ul className="menu menu-horizontal px-1">
-          {/*<li>
-            <Link href="/" className={pathname === "/" ? "active" : ""}>
-              Cuentas
-            </Link>
-          </li>
-           <li>
-            <Link
-              href="/muertes"
-              className={pathname === "/muertes" ? "active" : ""}
-            >
-              Muertes
-            </Link>
-          </li> */}
-        </ul>
       </div>
       <div className="navbar-end">
         <Theme />
@@ -78,9 +43,9 @@ export default function Navbar() {
           </div>
           <div
             tabIndex={0}
-            className="dropdown-content card card-sm bg-base-100 z-1 w-64 shadow-md"
+            className="dropdown-content card card-sm bg-base-100 z-1 w-64"
           >
-            <div className="card-body">
+            <div className="card-body bg-base-300 text-base-content rounded-md">
               <h3 className="text-base">¡DATABORD necesita comer!</h3>
               <p className="text-xs">
                 Regalale un cafecito haciendo click en su logo. Dale su dosis de
@@ -97,7 +62,7 @@ export default function Navbar() {
                   width={400}
                   height={400}
                   priority
-                  objectFit="cover"
+                  style={{ objectFit: "cover" }}
                 />
               </Link>{" "}
             </div>
